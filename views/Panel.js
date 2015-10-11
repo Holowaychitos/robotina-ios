@@ -1,5 +1,6 @@
 var React = require('react-native')
 var _ = require('lodash')
+var RNChart = require('react-native-chart')
 
 var {
   StyleSheet,
@@ -16,6 +17,8 @@ var Form = require('../components/Form')
 
 var COLORS = require('../style/colors')
 
+// var API = require('../lib/api')
+
 var Panel = React.createClass({
 
   propTypes: {
@@ -25,9 +28,21 @@ var Panel = React.createClass({
   getInitialState () {
     return {
       control: {
-        led: false
+        output_1: false,
+        output_2: false,
+        output_3: false
       }
     }
+  },
+
+  componentDidMount () {
+    /*
+    API.getWeatherTimeline.then((data) => {
+      this.setState({
+        weather: _.get(data, ['body', 'values'], [])
+      })
+    })
+    */
   },
 
   _onUpdate (newControl) {
@@ -44,7 +59,16 @@ var Panel = React.createClass({
   render () {
     var {control} = this.state
 
-    var ledValue = _.get(control, 'led')
+    var chartData = [
+      {
+        name: 'LineChart',
+        lineWidth: 2,
+        showDataPoint: true,
+        data: [32, 23, 21, 32, 25]
+      }
+    ]
+
+    var xLabels = ['6 Oct', '7 Oct', '8 Oct', '9 Oct', '10 Oct']
 
     return (
       <View style={styles.container}>
@@ -56,14 +80,34 @@ var Panel = React.createClass({
             <Text style={{flex: 1}}>Luz de la entrada</Text>
             <SwitchIOS
               onTintColor={COLORS.PRIMARY}
-              value={ledValue}
+              value={_.get(control, 'output_1')}
               onValueChange={this._onControl.bind(null, {
-                led: !ledValue
+                'output_1': !_.get(control, 'output_1')
               })} />
           </InputGroup>
 
           <InputGroup>
-            <Text style={{flex: 1}}>Temperatura</Text>
+            <Text style={{flex: 1}}>Luz del patio</Text>
+            <SwitchIOS
+              onTintColor={COLORS.PRIMARY}
+              value={_.get(control, 'output_2')}
+              onValueChange={this._onControl.bind(null, {
+                'output_2': !_.get(control, 'output_2')
+              })} />
+          </InputGroup>
+
+          <InputGroup>
+            <Text style={{flex: 1}}>Luz de la habitación</Text>
+            <SwitchIOS
+              onTintColor={COLORS.PRIMARY}
+              value={_.get(control, 'output_3')}
+              onValueChange={this._onControl.bind(null, {
+                'output_3': !_.get(control, 'output_3')
+              })} />
+          </InputGroup>
+
+          <InputGroup>
+            <Text style={{flex: 1}}>Aire AC</Text>
             <SliderIOS
               minimumTrackTintColor={COLORS.PRIMARY}
               style={{flex: 1}}
@@ -72,6 +116,12 @@ var Panel = React.createClass({
               value={5} />
           </InputGroup>
         </Form>
+
+        <RNChart style={styles.chart}
+          chartData={chartData}
+          verticalGridStep={8}
+          xLabels={xLabels} />
+
         </ScrollView>
       </View>
     )
@@ -101,6 +151,10 @@ var styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1
+  },
+  chart: {
+    margin: 20,
+    height: 200
   }
 })
 

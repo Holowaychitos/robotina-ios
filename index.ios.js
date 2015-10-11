@@ -18,16 +18,32 @@ var Routes = {
 
 window.navigator.userAgent = 'react-native'
 var io = require('socket.io-client/socket.io')
-window.socket = io.connect('http://192.100.0.101:3000', {jsonp: false})
+window.socket = io.connect('http://192.100.0.102:3000', {jsonp: false})
 
 window.socket.on('controlUpdate', (data) => {
   console.log({data})
 
-  if (_.eq(data, {button: true})) {
+  if (data.intput_1) {
     VibrationIOS.vibrate()
     AlertIOS.alert(
-      'Awebo',
-      'Alguien tocó tu timbre'
+      'Hey! Tocan tu casa',
+      'Alguien está tocando tu timbre de tu CASA'
+    )
+  }
+
+  if (data.intput_2) {
+    VibrationIOS.vibrate()
+    AlertIOS.alert(
+      'Hey! Tocan tu negocio',
+      'Alguien está tocando tu timbre de tu NEGOCIO'
+    )
+  }
+
+  if (data.intput_3) {
+    VibrationIOS.vibrate()
+    AlertIOS.alert(
+      'Hey! Tocan tu oficina',
+      'Alguien está tocando tu timbre de tu OFICINA'
     )
   }
 })
@@ -37,7 +53,7 @@ var atthack = React.createClass({
   render () {
     return (
       <Navigator
-          initialRoute={{name: 'Login', index: 1}}
+          initialRoute={{name: 'Login', index: 0}}
           renderScene={(route, navigator) => {
             var CurrentView = Routes[route.index]
 
