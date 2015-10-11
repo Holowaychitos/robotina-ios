@@ -1,8 +1,11 @@
 var React = require('react-native')
+var _ = require('lodash')
 
 var {
   AppRegistry,
-  Navigator
+  Navigator,
+  AlertIOS,
+  VibrationIOS
 } = React
 
 var Login = require('./views/Login')
@@ -17,12 +20,24 @@ window.navigator.userAgent = 'react-native'
 var io = require('socket.io-client/socket.io')
 window.socket = io.connect('http://192.100.0.101:3000', {jsonp: false})
 
+window.socket.on('controlUpdate', (data) => {
+  console.log({data})
+
+  if (_.eq(data, {button: true})) {
+    VibrationIOS.vibrate()
+    AlertIOS.alert(
+      'Awebo',
+      'Alguien tocó tu timbre'
+    )
+  }
+})
+
 var atthack = React.createClass({
 
   render () {
     return (
       <Navigator
-          initialRoute={{name: 'My First Scene', index: 0}}
+          initialRoute={{name: 'Login', index: 1}}
           renderScene={(route, navigator) => {
             var CurrentView = Routes[route.index]
 
@@ -31,7 +46,7 @@ var atthack = React.createClass({
               onForward={() => {
                 var nextIndex = route.index + 1
                 navigator.push({
-                  name: 'Scene ' + nextIndex,
+                  name: 'Panel',
                   index: nextIndex
                 })
               }}

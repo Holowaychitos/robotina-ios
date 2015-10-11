@@ -6,7 +6,8 @@ var {
   Text,
   View,
   SwitchIOS,
-  ScrollView
+  ScrollView,
+  SliderIOS
 } = React
 
 var InputGroup = require('../components/InputGroup')
@@ -29,17 +30,15 @@ var Panel = React.createClass({
     }
   },
 
-  _onControl (control, value) {
-    window.socket.emit('controlHandler', {
-      control,
-      value
-    })
-
+  _onUpdate (newControl) {
     this.setState(_.merge(this.state, {
-      control: {
-        [control]: value
-      }
+      control: newControl
     }))
+  },
+
+  _onControl (newControl) {
+    window.socket.emit('controlHandler', newControl)
+    this._onUpdate(newControl)
   },
 
   render () {
@@ -49,13 +48,28 @@ var Panel = React.createClass({
 
     return (
       <View style={styles.container}>
-        <Header title='Robotina Panel' />
+        <Header title='Robotina Panel'/>
 
         <ScrollView style={styles.scrollView}>
         <Form>
           <InputGroup>
-            <Text style={{flex: 1}}>LED</Text>
-            <SwitchIOS onTintColor={COLORS.PRIMARY} value={ledValue} onValueChange={this._onControl.bind(null, 'led', !ledValue)} />
+            <Text style={{flex: 1}}>Luz de la entrada</Text>
+            <SwitchIOS
+              onTintColor={COLORS.PRIMARY}
+              value={ledValue}
+              onValueChange={this._onControl.bind(null, {
+                led: !ledValue
+              })} />
+          </InputGroup>
+
+          <InputGroup>
+            <Text style={{flex: 1}}>Temperatura</Text>
+            <SliderIOS
+              minimumTrackTintColor={COLORS.PRIMARY}
+              style={{flex: 1}}
+              maximumValue={10}
+              minimumValue={0}
+              value={5} />
           </InputGroup>
         </Form>
         </ScrollView>
@@ -66,7 +80,6 @@ var Panel = React.createClass({
 
 var styles = StyleSheet.create({
   container: {
-    paddingTop: 20,
     flex: 1,
     alignItems: 'stretch',
     backgroundColor: '#FAFAFA'

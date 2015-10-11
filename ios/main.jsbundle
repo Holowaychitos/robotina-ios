@@ -1371,12 +1371,15 @@ throw new TypeError(
 
 var index=findIndex.call(this,predicate,context);
 return index === -1?undefined:this[index];}});}})();
-__d('atthack/index.ios.js',["react-native/Libraries/react-native/react-native.js","atthack/views/Login.js","atthack/views/Panel.js","socket.io-client/socket.io.js"],function(global, require, module, exports) {  var React=require('react-native/Libraries/react-native/react-native.js');var 
+__d('atthack/index.ios.js',["react-native/Libraries/react-native/react-native.js","lodash/index.js","atthack/views/Login.js","atthack/views/Panel.js","socket.io-client/socket.io.js"],function(global, require, module, exports) {  var React=require('react-native/Libraries/react-native/react-native.js');
+var _=require('lodash/index.js');var 
 
 
 AppRegistry=
 
-React.AppRegistry;var Navigator=React.Navigator;
+
+
+React.AppRegistry;var Navigator=React.Navigator;var AlertIOS=React.AlertIOS;var VibrationIOS=React.VibrationIOS;
 
 var Login=require('atthack/views/Login.js');
 var Panel=require('atthack/views/Panel.js');
@@ -1389,6 +1392,18 @@ var Routes={
 window.navigator.userAgent = 'react-native';
 var io=require('socket.io-client/socket.io.js');
 window.socket = io.connect('http://192.100.0.101:3000',{jsonp:false});
+
+window.socket.on('controlUpdate',function(data){
+console.log({data:data});
+
+if(_.eq(data,{button:true})){
+VibrationIOS.vibrate();
+AlertIOS.alert(
+'Awebo',
+'Alguien tocó tu timbre');}});
+
+
+
 
 var atthack=React.createClass({displayName:'atthack',
 
@@ -53607,385 +53622,6 @@ Object.keys(componentOrElement));}
 
 module.exports = findDOMNode;
 });
-__d('atthack/views/Login.js',["react-native/Libraries/react-native/react-native.js","TouchID","atthack/components/Button.js","atthack/components/Center.js"],function(global, require, module, exports) {  var React=require('react-native/Libraries/react-native/react-native.js');
-
-var TouchID=require('TouchID');
-
-var Button=require('atthack/components/Button.js');
-var Center=require('atthack/components/Center.js');var 
-
-
-StyleSheet=
-
-
-
-React.StyleSheet;var Text=React.Text;var View=React.View;var Image=React.Image;
-
-var Login=React.createClass({displayName:'Login',
-
-propTypes:{
-onForward:React.PropTypes.func.isRequired},
-
-
-_onSuccessStart:function(){
-console.log('SUCCESS');
-this.props.onForward();},
-
-
-_onStart:function(){var _this=this;
-TouchID.isSupported().
-then(function(){
-TouchID.authenticate('To get your advanced features').
-then(_this._onSuccessStart);}).
-
-catch(this._onSuccessStart);},
-
-
-render:function(){
-return (
-React.createElement(View,{style:styles.container},
-React.createElement(View,{style:styles.welcome},
-React.createElement(Center,null,
-React.createElement(Image,{style:styles.robotina,source:{uri:'http://i.imgur.com/mmA0KRB.png'}}),
-React.createElement(Text,{style:styles.welcomeText},'Welcome to Robotina'),
-
-
-React.createElement(Text,null,'Control your home, control your life.'))),
-
-
-
-
-
-React.createElement(Button,{onPress:this._onStart,text:'Start'})));}});
-
-
-
-
-
-var styles=StyleSheet.create({
-container:{
-flex:1,
-padding:20,
-justifyContent:'center',
-alignItems:'stretch',
-backgroundColor:'#FFF'},
-
-robotina:{
-height:256,
-width:256,
-resizeMode:'contain'},
-
-welcomeText:{
-paddingTop:30,
-paddingBottom:10,
-fontSize:28,
-fontWeight:'200'},
-
-welcome:{
-flex:1,
-justifyContent:'center'}});
-
-
-
-module.exports = Login;
-});
-__d('TouchID',["react-native/Libraries/react-native/react-native.js","react-native-touch-id/data/errors.js"],function(global, require, module, exports) {  'use strict';
-
-
-
-
-
-var React=require('react-native/Libraries/react-native/react-native.js');var 
-
-NativeModules=
-React.NativeModules;
-
-var NativeTouchID=NativeModules.TouchID;
-var ERRORS=require('react-native-touch-id/data/errors.js');
-
-
-var invariant=require('invariant');
-
-
-
-
-
-
-
-var TouchID={
-isSupported:function(){
-return new Promise(function(resolve,reject){
-NativeTouchID.isSupported(function(error){
-if(error){
-return reject(createError(error.message));}
-
-
-resolve(true);});});},
-
-
-
-
-authenticate:function(reason){
-var authReason;
-
-
-if(reason){
-authReason = reason;}else 
-
-{
-authReason = ' ';}
-
-
-return new Promise(function(resolve,reject){
-NativeTouchID.authenticate(authReason,function(error){
-
-if(error){
-return reject(createError(error.message));}
-
-
-resolve(true);});});}};
-
-
-
-
-
-function TouchIDError(name,details){
-this.name = name || 'TouchIDError';
-this.message = details.message || 'Touch ID Error';
-this.details = details || {};}
-
-
-TouchIDError.prototype = Object.create(Error.prototype);
-TouchIDError.prototype.constructor = TouchIDError;
-
-function createError(error){
-var details=ERRORS[error];
-details.name = error;
-
-return new TouchIDError(error,details);}
-
-
-module.exports = TouchID;
-});
-__d('react-native-touch-id/data/errors.js',[],function(global, require, module, exports) {  module.exports = {
-'LAErrorAuthenticationFailed':{
-message:'Authentication was not successful because the user failed to provide valid credentials.'},
-
-'LAErrorUserCancel':{
-message:'Authentication was canceled by the user—for example, the user tapped Cancel in the dialog.'},
-
-'LAErrorUserFallback':{
-message:'Authentication was canceled because the user tapped the fallback button (Enter Password).'},
-
-'LAErrorSystemCancel':{
-message:'Authentication was canceled by system—for example, if another application came to foreground while the authentication dialog was up.'},
-
-'LAErrorPasscodeNotSet':{
-message:'Authentication could not start because the passcode is not set on the device.'},
-
-'LAErrorTouchIDNotAvailable':{
-message:'Authentication could not start because Touch ID is not available on the device'},
-
-'LAErrorTouchIDNotEnrolle':{
-message:'Authentication could not start because Touch ID has no enrolled fingers.'},
-
-'RCTTouchIDUnknownError':{
-message:'Could not authenticate for an unknown reason.'},
-
-'RCTTouchIDNotSupported':{
-message:'Device does not support Touch ID.'}};
-});
-__d('atthack/components/Button.js',["react-native/Libraries/react-native/react-native.js","atthack/style/sizes.js","atthack/style/colors.js"],function(global, require, module, exports) {  var React=require('react-native/Libraries/react-native/react-native.js');var 
-View=React.View;var Text=React.Text;var StyleSheet=React.StyleSheet;var TouchableOpacity=React.TouchableOpacity;
-
-var SIZES=require('atthack/style/sizes.js');
-var COLORS=require('atthack/style/colors.js');
-
-var FullButton=React.createClass({displayName:'FullButton',
-propTypes:{
-onPress:React.PropTypes.func,
-text:React.PropTypes.string,
-color:React.PropTypes.string},
-
-
-render:function(){var 
-color=this.props.color;
-
-return (
-React.createElement(TouchableOpacity,{onPress:this.props.onPress,style:styles.container},
-React.createElement(View,{style:[styles.button,color && {backgroundColor:color}]},
-React.createElement(Text,{style:styles.buttonText},
-this.props.text.toUpperCase()))));}});
-
-
-
-
-
-
-
-var styles=StyleSheet.create({
-container:{},
-
-button:{
-height:SIZES.INPUT_HEIGHT,
-margin:SIZES.BASE_PADDING,
-backgroundColor:COLORS.PRIMARY,
-justifyContent:'center',
-alignItems:'center',
-borderRadius:SIZES.BORDER_RADIUS},
-
-buttonText:{
-color:'white',
-fontWeight:'400',
-fontSize:16}});
-
-
-
-module.exports = FullButton;
-});
-__d('atthack/style/sizes.js',[],function(global, require, module, exports) {  module.exports = {
-BASE_PADDING:5,
-BORDER_RADIUS:3,
-INPUT_HEIGHT:46,
-INPUT_GROUP_PADDING:15,
-FORM_CONTAINER_PADDING:15,
-FONT_SIZE:15};
-});
-__d('atthack/style/colors.js',[],function(global, require, module, exports) {  module.exports = {
-RED:'#FF3B30',
-BLUE:'#007AFF',
-
-DANGER:'#FF9500',
-WARNING:'#FF3B30',
-OK:'#39b54a',
-
-BORDER_COLOR:'#DFDFDF',
-
-PRIMARY:'#007AFF'};
-});
-__d('atthack/components/Center.js',["react-native/Libraries/react-native/react-native.js"],function(global, require, module, exports) {  var React=require('react-native/Libraries/react-native/react-native.js');var 
-View=React.View;var StyleSheet=React.StyleSheet;
-
-var FullButton=React.createClass({displayName:'FullButton',
-propTypes:{
-children:React.PropTypes.any},
-
-
-render:function(){
-return React.createElement(View,{style:styles.container},
-this.props.children);}});
-
-
-
-
-var styles=StyleSheet.create({
-container:{
-alignItems:'center'}});
-
-
-
-module.exports = FullButton;
-});
-__d('atthack/views/Panel.js',["react-native/Libraries/react-native/react-native.js","lodash/index.js","atthack/components/InputGroup.js","atthack/components/Header.js","atthack/components/Form.js","atthack/style/colors.js"],function(global, require, module, exports) {  function _defineProperty(obj,key,value){if(key in obj){Object.defineProperty(obj,key,{value:value,enumerable:true,configurable:true,writable:true});}else {obj[key] = value;}return obj;}var React=require('react-native/Libraries/react-native/react-native.js');
-var _=require('lodash/index.js');var 
-
-
-StyleSheet=
-
-
-
-
-React.StyleSheet;var Text=React.Text;var View=React.View;var SwitchIOS=React.SwitchIOS;var ScrollView=React.ScrollView;
-
-var InputGroup=require('atthack/components/InputGroup.js');
-var Header=require('atthack/components/Header.js');
-var Form=require('atthack/components/Form.js');
-
-var COLORS=require('atthack/style/colors.js');
-
-var Panel=React.createClass({displayName:'Panel',
-
-propTypes:{
-onForward:React.PropTypes.func.isRequired},
-
-
-getInitialState:function(){
-return {
-control:{
-led:false}};},
-
-
-
-
-_onControl:function(control,value){
-window.socket.emit('controlHandler',{
-control:control,
-value:value});
-
-
-this.setState(_.merge(this.state,{
-control:_defineProperty({},
-control,value)}));},
-
-
-
-
-render:function(){var 
-control=this.state.control;
-
-var ledValue=_.get(control,'led');
-
-return (
-React.createElement(View,{style:styles.container},
-React.createElement(Header,{title:'Robotina Panel'}),
-
-React.createElement(ScrollView,{style:styles.scrollView},
-React.createElement(Form,null,
-React.createElement(InputGroup,null,
-React.createElement(Text,{style:{flex:1}},'LED'),
-React.createElement(SwitchIOS,{onTintColor:COLORS.PRIMARY,value:ledValue,onValueChange:this._onControl.bind(null,'led',!ledValue)})),
-
-
-React.createElement(InputGroup,null,
-React.createElement(Text,{style:{flex:1}},'LED'),
-React.createElement(SwitchIOS,{onTintColor:COLORS.PRIMARY,value:ledValue,onValueChange:this._onControl.bind(null,'led',!ledValue)}))))));}});
-
-
-
-
-
-
-
-
-var styles=StyleSheet.create({
-container:{
-paddingTop:20,
-flex:1,
-alignItems:'stretch',
-backgroundColor:'#FAFAFA'},
-
-robotina:{
-height:256,
-width:256,
-resizeMode:'contain'},
-
-welcomeText:{
-paddingTop:30,
-paddingBottom:10,
-fontSize:28,
-fontWeight:'200'},
-
-welcome:{
-flex:1,
-justifyContent:'center'},
-
-scrollView:{
-flex:1}});
-
-
-
-module.exports = Panel;
-});
 __d('lodash/index.js',[],function(global, require, module, exports) {  /**
  * @license
  * lodash 3.10.1 (Custom Build) <https://lodash.com/>
@@ -66338,6 +65974,381 @@ root._ = _;}}).
 
 call(this);
 });
+__d('atthack/views/Login.js',["react-native/Libraries/react-native/react-native.js","TouchID","atthack/style/colors.js","atthack/components/Button.js","atthack/components/Center.js"],function(global, require, module, exports) {  var React=require('react-native/Libraries/react-native/react-native.js');
+
+var TouchID=require('TouchID');
+
+var COLORS=require('atthack/style/colors.js');
+
+var Button=require('atthack/components/Button.js');
+var Center=require('atthack/components/Center.js');var 
+
+
+StyleSheet=
+
+
+
+React.StyleSheet;var Text=React.Text;var View=React.View;var Image=React.Image;
+
+var Login=React.createClass({displayName:'Login',
+
+propTypes:{
+onForward:React.PropTypes.func.isRequired},
+
+
+_onSuccessStart:function(){
+console.log('SUCCESS');
+this.props.onForward();},
+
+
+_onStart:function(){var _this=this;
+TouchID.isSupported().
+then(function(){
+TouchID.authenticate('To get your advanced features').
+then(_this._onSuccessStart);}).
+
+catch(this._onSuccessStart);},
+
+
+render:function(){
+return (
+React.createElement(View,{style:styles.container},
+React.createElement(View,{style:styles.welcome},
+React.createElement(Center,null,
+React.createElement(Image,{style:styles.robotina,source:{uri:'http://i.imgur.com/mmA0KRB.png'}}),
+React.createElement(Text,{style:styles.welcomeText},'Welcome to Robotina'),
+
+
+React.createElement(Text,null,'Control your home, control your life.'))),
+
+
+
+
+
+React.createElement(Button,{onPress:this._onStart,text:'Start'})));}});
+
+
+
+
+
+var styles=StyleSheet.create({
+container:{
+flex:1,
+padding:20,
+justifyContent:'center',
+alignItems:'stretch',
+backgroundColor:COLORS.WHITE},
+
+robotina:{
+height:256,
+width:256,
+resizeMode:'contain'},
+
+welcomeText:{
+paddingTop:30,
+paddingBottom:10,
+fontSize:28,
+fontWeight:'200'},
+
+welcome:{
+flex:1,
+justifyContent:'center'}});
+
+
+
+module.exports = Login;
+});
+__d('TouchID',["react-native/Libraries/react-native/react-native.js","react-native-touch-id/data/errors.js"],function(global, require, module, exports) {  'use strict';
+
+
+
+
+
+var React=require('react-native/Libraries/react-native/react-native.js');var 
+
+NativeModules=
+React.NativeModules;
+
+var NativeTouchID=NativeModules.TouchID;
+var ERRORS=require('react-native-touch-id/data/errors.js');
+
+
+var invariant=require('invariant');
+
+
+
+
+
+
+
+var TouchID={
+isSupported:function(){
+return new Promise(function(resolve,reject){
+NativeTouchID.isSupported(function(error){
+if(error){
+return reject(createError(error.message));}
+
+
+resolve(true);});});},
+
+
+
+
+authenticate:function(reason){
+var authReason;
+
+
+if(reason){
+authReason = reason;}else 
+
+{
+authReason = ' ';}
+
+
+return new Promise(function(resolve,reject){
+NativeTouchID.authenticate(authReason,function(error){
+
+if(error){
+return reject(createError(error.message));}
+
+
+resolve(true);});});}};
+
+
+
+
+
+function TouchIDError(name,details){
+this.name = name || 'TouchIDError';
+this.message = details.message || 'Touch ID Error';
+this.details = details || {};}
+
+
+TouchIDError.prototype = Object.create(Error.prototype);
+TouchIDError.prototype.constructor = TouchIDError;
+
+function createError(error){
+var details=ERRORS[error];
+details.name = error;
+
+return new TouchIDError(error,details);}
+
+
+module.exports = TouchID;
+});
+__d('react-native-touch-id/data/errors.js',[],function(global, require, module, exports) {  module.exports = {
+'LAErrorAuthenticationFailed':{
+message:'Authentication was not successful because the user failed to provide valid credentials.'},
+
+'LAErrorUserCancel':{
+message:'Authentication was canceled by the user—for example, the user tapped Cancel in the dialog.'},
+
+'LAErrorUserFallback':{
+message:'Authentication was canceled because the user tapped the fallback button (Enter Password).'},
+
+'LAErrorSystemCancel':{
+message:'Authentication was canceled by system—for example, if another application came to foreground while the authentication dialog was up.'},
+
+'LAErrorPasscodeNotSet':{
+message:'Authentication could not start because the passcode is not set on the device.'},
+
+'LAErrorTouchIDNotAvailable':{
+message:'Authentication could not start because Touch ID is not available on the device'},
+
+'LAErrorTouchIDNotEnrolle':{
+message:'Authentication could not start because Touch ID has no enrolled fingers.'},
+
+'RCTTouchIDUnknownError':{
+message:'Could not authenticate for an unknown reason.'},
+
+'RCTTouchIDNotSupported':{
+message:'Device does not support Touch ID.'}};
+});
+__d('atthack/style/colors.js',[],function(global, require, module, exports) {  module.exports = {
+WHITE:'#FAFAFA',
+
+RED:'#FF3B30',
+BLUE:'#007AFF',
+
+DANGER:'#FF9500',
+WARNING:'#FF3B30',
+OK:'#39b54a',
+
+BORDER_COLOR:'#E0E1E3',
+
+PRIMARY:'#007AFF'};
+});
+__d('atthack/components/Button.js',["react-native/Libraries/react-native/react-native.js","atthack/style/sizes.js","atthack/style/colors.js"],function(global, require, module, exports) {  var React=require('react-native/Libraries/react-native/react-native.js');var 
+View=React.View;var Text=React.Text;var StyleSheet=React.StyleSheet;var TouchableOpacity=React.TouchableOpacity;
+
+var SIZES=require('atthack/style/sizes.js');
+var COLORS=require('atthack/style/colors.js');
+
+var FullButton=React.createClass({displayName:'FullButton',
+propTypes:{
+onPress:React.PropTypes.func,
+text:React.PropTypes.string,
+color:React.PropTypes.string},
+
+
+render:function(){var 
+color=this.props.color;
+
+return (
+React.createElement(TouchableOpacity,{onPress:this.props.onPress,style:styles.container},
+React.createElement(View,{style:[styles.button,color && {backgroundColor:color}]},
+React.createElement(Text,{style:styles.buttonText},
+this.props.text.toUpperCase()))));}});
+
+
+
+
+
+
+
+var styles=StyleSheet.create({
+container:{},
+
+button:{
+height:SIZES.INPUT_HEIGHT,
+margin:SIZES.BASE_PADDING,
+backgroundColor:COLORS.PRIMARY,
+justifyContent:'center',
+alignItems:'center',
+borderRadius:SIZES.BORDER_RADIUS},
+
+buttonText:{
+color:'white',
+fontWeight:'400',
+fontSize:16}});
+
+
+
+module.exports = FullButton;
+});
+__d('atthack/style/sizes.js',[],function(global, require, module, exports) {  module.exports = {
+BASE_PADDING:5,
+BORDER_RADIUS:3,
+INPUT_HEIGHT:46,
+INPUT_GROUP_PADDING:15,
+FORM_CONTAINER_PADDING:15,
+FONT_SIZE:15};
+});
+__d('atthack/components/Center.js',["react-native/Libraries/react-native/react-native.js"],function(global, require, module, exports) {  var React=require('react-native/Libraries/react-native/react-native.js');var 
+View=React.View;var StyleSheet=React.StyleSheet;
+
+var FullButton=React.createClass({displayName:'FullButton',
+propTypes:{
+children:React.PropTypes.any},
+
+
+render:function(){
+return React.createElement(View,{style:styles.container},
+this.props.children);}});
+
+
+
+
+var styles=StyleSheet.create({
+container:{
+alignItems:'center'}});
+
+
+
+module.exports = FullButton;
+});
+__d('atthack/views/Panel.js',["react-native/Libraries/react-native/react-native.js","lodash/index.js","atthack/components/InputGroup.js","atthack/components/Header.js","atthack/components/Form.js","atthack/style/colors.js"],function(global, require, module, exports) {  var React=require('react-native/Libraries/react-native/react-native.js');
+var _=require('lodash/index.js');var 
+
+
+StyleSheet=
+
+
+
+
+React.StyleSheet;var Text=React.Text;var View=React.View;var SwitchIOS=React.SwitchIOS;var ScrollView=React.ScrollView;
+
+var InputGroup=require('atthack/components/InputGroup.js');
+var Header=require('atthack/components/Header.js');
+var Form=require('atthack/components/Form.js');
+
+var COLORS=require('atthack/style/colors.js');
+
+var Panel=React.createClass({displayName:'Panel',
+
+propTypes:{
+onForward:React.PropTypes.func.isRequired},
+
+
+getInitialState:function(){
+return {
+control:{
+led:false}};},
+
+
+
+
+_onControl:function(newControl){
+window.socket.emit('controlHandler',newControl);
+
+this.setState(_.merge(this.state,{
+control:newControl}));},
+
+
+
+render:function(){var 
+control=this.state.control;
+
+var ledValue=_.get(control,'led');
+
+return (
+React.createElement(View,{style:styles.container},
+React.createElement(Header,{title:'Robotina Panel'}),
+
+React.createElement(ScrollView,{style:styles.scrollView},
+React.createElement(Form,null,
+React.createElement(InputGroup,null,
+React.createElement(Text,{style:{flex:1}},'LED'),
+React.createElement(SwitchIOS,{onTintColor:COLORS.PRIMARY,value:ledValue,onValueChange:this._onControl.bind(null,{
+led:!ledValue})}))))));}});
+
+
+
+
+
+
+
+
+
+var styles=StyleSheet.create({
+container:{
+paddingTop:20,
+flex:1,
+alignItems:'stretch',
+backgroundColor:'#FAFAFA'},
+
+robotina:{
+height:256,
+width:256,
+resizeMode:'contain'},
+
+welcomeText:{
+paddingTop:30,
+paddingBottom:10,
+fontSize:28,
+fontWeight:'200'},
+
+welcome:{
+flex:1,
+justifyContent:'center'},
+
+scrollView:{
+flex:1}});
+
+
+
+module.exports = Panel;
+});
 __d('atthack/components/InputGroup.js',["react-native/Libraries/react-native/react-native.js","atthack/style/sizes.js","atthack/style/colors.js"],function(global, require, module, exports) {  var React=require('react-native/Libraries/react-native/react-native.js');var 
 View=React.View;var StyleSheet=React.StyleSheet;
 
@@ -66397,14 +66408,14 @@ title)));}});
 
 var styles=StyleSheet.create({
 container:{
-backgroundColor:'#FFF',
+backgroundColor:COLORS.WHITE,
 padding:SIZES.INPUT_GROUP_PADDING,
 alignItems:'center',
 borderBottomColor:COLORS.BORDER_COLOR,
 borderBottomWidth:1},
 
 title:{
-fontSize:SIZES.FONT_SIZE + 2,
+fontSize:SIZES.FONT_SIZE + 3,
 fontWeight:'500'}});
 
 
